@@ -32,7 +32,9 @@ angular.module('formidabelApp')
     , true
 
     collectPeople = ->
-      $scope.people = _.union.apply(null, _.map(_.pluck($scope.expenses, 'payers'), _.keys))
+      payers = _.map(_.pluck($scope.expenses, 'payers'), _.keys)
+      debtors = _.pluck($scope.expenses, 'debtors')
+      $scope.people = _.select(_.union.apply(null, payers.concat(debtors)), _.identity)
 
     recomputeLeft = ->
       _.each $scope.expenses, (expense) ->

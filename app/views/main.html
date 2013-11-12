@@ -17,7 +17,8 @@
   <h2>Ausgaben</h2>
   <ul>
     <li ng-repeat='expense in expenses'>
-    {{expense.name}} ({{expenseTotal(expense)}})
+      {{expense.name}} ({{expenseTotal(expense)}}) für
+      <input type='string' ng-model='expense.debtors' fdl-list>
       <ul>
         <li ng-repeat='(payer, amount) in expense.payers'>
           {{payer}} hat {{amount}} bezahlt.
