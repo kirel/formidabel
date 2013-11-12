@@ -3,7 +3,8 @@
 angular.module('formidabelApp', [
   'ngCookies',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'ui.select2'
 ])
   .config ($routeProvider) ->
     $routeProvider
