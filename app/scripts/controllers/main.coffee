@@ -6,9 +6,9 @@ unary = (fn) -> (a) -> fn(a)
 
 angular.module('formidabelApp')
   .controller 'MainCtrl', ($scope) ->
-    $scope.expenses = [
-      {name: 'Foo', payers: {Daniel: 5, Jan: 50}, left: []},
-      {name: 'Foo', payers: {Tom: 6, Jan: 3, Martin: 0}, left: []}]
+    $scope.expenses = []
+      #{name: 'Foo', payers: {Daniel: 5, Jan: 50}, debtors: [], left: []},
+      #{name: 'Foo', payers: {Tom: 6, Jan: 3, Martin: 0}, debtors: [], left: []}]
     $scope.people = []
     $scope.payed = {}
     $scope.debt = {}
@@ -21,7 +21,7 @@ angular.module('formidabelApp')
       expense.add = {}
 
     $scope.addExpense = (newExpense) ->
-      $scope.expenses.push _.extend({}, newExpense, payers: {})
+      $scope.expenses.push _.extend({}, newExpense, debtors: [], payers: {})
       newExpense.name = null
 
     $scope.$watch 'expenses', ->
@@ -47,10 +47,15 @@ angular.module('formidabelApp')
     accumulateExpenses = ->
       $scope.payed = plusmerge.apply(null, [{}].concat(_.pluck($scope.expenses, 'payers')))
 
+    # return { debtor: total/paticipants, ... }
     expenseSettlement = (expense) ->
       total = $scope.expenseTotal(expense)
-      participants = _.size(expense.payers)
-      _.merge {}, expense.payers, -> total/participants
+      if _.select(expense.debtors, _.identity).length
+        participants = _.size(expense.debtors)
+        _.zipObject expense.debtors, _.map(_.range(expense.debtors.length), -> total/participants)
+      else
+        participants = _.size(expense.payers)
+        _.merge({}, expense.payers, -> total/participants)
 
     accumulateDebt = ->
       $scope.debt = plusmerge.apply(null, [{}].concat(_.map($scope.expenses, expenseSettlement)))
